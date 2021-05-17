@@ -10,14 +10,14 @@ block content
       input(type="email", name="email", placeholder="Email", value=email required="")
       input#password(type="password", name="password", placeholder="Password", required="")
       input#passwordConf(type="password", name="passwordConf", placeholder="Confirm password", required="")
-      input(type="submit", value="Login")
+      input(type="submit", value="Register")
 
-    a(href="/login") Already have an account? Login here.
+    a(href="/users/login") Already have an account? Login here.
 
   script.
-    const password =  document.getElementByID("password")
-    const passwordConf =  document.getElementByID("passwordConf")
-    const form =  document.getElementByID("registerForm")
+    const password =  document.getElementById("password")
+    const passwordConf =  document.getElementById("passwordConf")
+    const form =  document.getElementById("registerForm")
 
     function validatePassword() {
       if (password.value !== passwordConf.value) {
