@@ -4,6 +4,7 @@ const port = 3000
 const pug = require('pug')
 
 const routes = require('./routes')
+require('./config/mongoose')
 
 const server = app.listen(port, () => console.log(`Server is listening on port:${port}!`))
 
