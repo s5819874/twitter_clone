@@ -12,8 +12,10 @@ const authenticator = (req, res, next) => {
 
 router.use('/users', userRoute)
 router.get('/', authenticator, (req, res, next) => {
+  console.log(req.user)
   const payload = {
-    pageTitle: 'Home'
+    pageTitle: 'Home',
+    userLoggedIn: req.user
   }
   res.status(200).render('home', payload)
 })
