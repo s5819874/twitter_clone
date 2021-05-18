@@ -6,6 +6,13 @@ const userController = {
   loginPage: (req, res) => {
     return res.render('login')
   },
+  login: (req, res) => {
+    return res.redirect('/')
+  },
+  logout: (req, res) => {
+    req.logout()
+    return res.redirect('/users/login')
+  },
   registerPage: (req, res) => {
     return res.render('register')
   },
@@ -40,7 +47,7 @@ const userController = {
           password: bcrypt.hashSync(password, 10)
         })
           .then(user => {
-            return res.redirect("/")
+            return res.redirect('/')
           })
           .catch(err => console.log(err))
 
