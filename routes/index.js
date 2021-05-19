@@ -3,6 +3,7 @@ const router = express.Router()
 const passport = require('passport')
 
 const userRoute = require('./modules/userRoute')
+const apiRoute = require('./modules/apiRoute')
 const authenticator = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next()
@@ -11,8 +12,8 @@ const authenticator = (req, res, next) => {
 }
 
 router.use('/users', userRoute)
+router.use('/api', authenticator, apiRoute)
 router.get('/', authenticator, (req, res, next) => {
-  console.log(req.user)
   const payload = {
     pageTitle: 'Home',
     userLoggedIn: req.user
