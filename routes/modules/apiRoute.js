@@ -40,4 +40,17 @@ router.post('/posts', (req, res) => {
 
 })
 
+router.put('/posts/:id/like', (req, res) => {
+  const userId = req.user._id
+  const postId = req.params.id
+
+  const isLiked = req.user.likes && req.user.likes.includes(postId)
+
+  // insert to User
+
+  //insert to Post
+
+  return res.send("yahoo")
+})
+
 module.exports = router
