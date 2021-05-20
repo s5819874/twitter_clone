@@ -3,3 +3,6 @@ extends layouts/main.pug
 block content 
   +createPostForm(userLoggedIn)
   .postsContainer
+
+block script
+  script(src="/js/home.js") 

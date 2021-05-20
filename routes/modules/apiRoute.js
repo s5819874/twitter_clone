@@ -4,6 +4,18 @@ const router = express.Router()
 const User = require('../../models/userSchema')
 const Post = require('../../models/postSchema')
 
+router.get('/posts', (req, res) => {
+  Post.find()
+    .populate("postedBy")
+    .sort({ "createdAt": -1 })
+    .then(results => res.status(200).send(results))
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(400)
+    })
+
+})
+
 router.post('/posts', (req, res) => {
   //handle bad request
   if (!req.body.content) {
