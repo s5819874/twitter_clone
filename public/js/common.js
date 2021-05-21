@@ -24,6 +24,8 @@ $("#submitPostButton").click(event => {
     $(".postsContainer").prepend(html)
     textBox.val("")
     submitButton.prop("disabled", true)
+
+    if ($(".noResults")) $(".noResults").remove()
   })
 })
 
@@ -34,12 +36,23 @@ $(document).on("click", ".likeButton", event => {
   if (!postId) return
 
   $.ajax({
+
     url: `/api/posts/${postId}/like`,
     type: "PUT",
-    success: postData =>
-      console.log(postData)
-  })
+    success: (postData) => {
 
+      console.log(postData.likes.length);
+
+      // button.find("span").text(postData.likes.length || "")
+
+      // if (postData.likes.includes(req.user._id)) {
+      //   return button.addClass("active")
+      // }
+      // return button.removeClass("active")
+
+    }
+
+  })
 })
 
 function getPostIdFromElement(element) {
@@ -84,6 +97,7 @@ function createPostHtml(postData) {
                   <div class='postButtonContainer'>
                     <button class='likeButton'>
                       <i class='far fa-heart'></i>
+                      <sapn></sapn>
                     </button>
                   </div>
                 </div>

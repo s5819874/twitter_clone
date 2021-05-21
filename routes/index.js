@@ -18,6 +18,7 @@ router.get('/', authenticator, (req, res, next) => {
     pageTitle: 'Home',
     userLoggedIn: req.user
   }
+  console.log(req.user)
   res.status(200).render('home', payload)
 })
 
