@@ -45,7 +45,7 @@ router.put('/posts/:id/like', async (req, res) => {
   const postId = req.params.id
 
   req.user.likes = req.user.likes.map(o => o.toString())
-  
+
   const isLiked = req.user.likes && req.user.likes.includes(postId)
   const option = isLiked ? "$pull" : "$addToSet"
 

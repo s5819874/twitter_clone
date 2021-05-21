@@ -16,9 +16,9 @@ router.use('/api', authenticator, apiRoute)
 router.get('/', authenticator, (req, res, next) => {
   const payload = {
     pageTitle: 'Home',
-    userLoggedIn: req.user
+    userLoggedIn: req.user,
+    userLoggedInJs: JSON.stringify(req.user)
   }
-  console.log(req.user)
   res.status(200).render('home', payload)
 })
 

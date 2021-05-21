@@ -41,14 +41,14 @@ $(document).on("click", ".likeButton", event => {
     type: "PUT",
     success: (postData) => {
 
-      console.log(postData.likes.length);
+      button.find("span").text(postData.likes.length || "")
 
-      // button.find("span").text(postData.likes.length || "")
+      //postData.likes = postData.likes.map(o => o.toString())
 
-      // if (postData.likes.includes(req.user._id)) {
-      //   return button.addClass("active")
-      // }
-      // return button.removeClass("active")
+      if (postData.likes.includes(userLoggedIn._id)) {
+        return button.addClass("active")
+      }
+      button.removeClass("active")
 
     }
 
@@ -68,6 +68,7 @@ function createPostHtml(postData) {
 
   const displayName = postData.postedBy.firstName + " " + postData.postedBy.lastName
   const timestamp = timeDifference(new Date(), new Date(postData.createdAt))
+  const likeButtonActiveClass = postData.likes.includes(userLoggedIn._id) ? "active" : ""
 
   return `<div class='post' data-id='${postData._id}'>
             <div class='mainContentContainer'>
@@ -94,10 +95,10 @@ function createPostHtml(postData) {
                       <i class='fas fa-retweet'></i>
                     </button>
                   </div>
-                  <div class='postButtonContainer'>
-                    <button class='likeButton'>
+                  <div class='postButtonContainer red'>
+                    <button class='likeButton ${likeButtonActiveClass}'>
                       <i class='far fa-heart'></i>
-                      <sapn></sapn>
+                      <span>${postData.likes.length || ""}</span>
                     </button>
                   </div>
                 </div>
