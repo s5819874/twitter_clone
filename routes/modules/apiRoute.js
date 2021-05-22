@@ -24,10 +24,16 @@ router.post('/posts', (req, res) => {
     return res.sendStatus(400)
   }
 
-  Post.create({
+  let postData = {
     content: req.body.content,
     postedBy: req.user // 給user, model自己找到Id
-  })
+  }
+
+  if (req.body.replyTo) {
+    postData.replyTo = req.body.replyTo
+  }
+
+  Post.create(postData)
     .then(post => {
       User.populate(post, { path: "postedBy" })
         .then(newpost => {
@@ -111,10 +117,12 @@ async function getPosts(filter) {
   let results = await Post.find(filter)
     .populate("postedBy")
     .populate("retweetData")
+    .populate("replyTo")
     .sort({ "createdAt": -1 })
     .catch(err => console.log(err))
 
-  return await User.populate(results, { path: "retweetData.postedBy" })
+  results = await User.populate(results, { path: "retweetData.postedBy" })
+  return await User.populate(results, { path: "replyTo.postedBy" })
 }
 
 module.exports = router

@@ -14,21 +14,35 @@ $("#postTextarea, #replyTextarea").keyup(event => {
   submitButton.prop("disabled", false)
 })
 
-$("#submitPostButton").click(event => {
-  let textBox = $("#postTextarea")
+$("#submitPostButton, #submitReplyButton").click(event => {
   let submitButton = $(event.target)
+
+  let isModal = submitButton.parents(".modal").length
+
+  textBox = isModal ? $("#replyTextarea") : $("#postTextarea")
 
   let data = {
     content: textBox.val()
   }
 
-  $.post('/api/posts', data, postData => {
-    let html = createPostHtml(postData)
-    $(".postsContainer").prepend(html)
-    textBox.val("")
-    submitButton.prop("disabled", true)
+  if (isModal) {
+    const id = submitButton.data().id
+    if (id === null) alert("Button's data.id is null!")
+    data.replyTo = id
+  }
 
-    if ($(".noResults")) $(".noResults").remove()
+  $.post('/api/posts', data, postData => {
+
+    if (postData.replyTo) {
+      location.reload()
+    } else {
+      let html = createPostHtml(postData)
+      $(".postsContainer").prepend(html)
+      textBox.val("")
+      submitButton.prop("disabled", true)
+
+      if ($(".noResults")) $(".noResults").remove()
+    }
   })
 })
 
@@ -36,6 +50,8 @@ $("#submitPostButton").click(event => {
 $("#replyModal").on("show.bs.modal", event => {
   const button = $(event.relatedTarget)
   const postId = getPostIdFromElement(button)
+
+  $("#submitReplyButton").data("id", postId)
 
   $.get("/api/posts/" + postId, results => {
     outputPosts(results, $("#originalPostContainer"))
@@ -108,13 +124,17 @@ function getPostIdFromElement(element) {
 
 function createPostHtml(postData) {
 
-  if (!postData) alert("postData undefined!")
+  if (postData === null) alert("postData undefined!")
 
   const isRetweet = postData.retweetData !== undefined
 
   //retweetPost content
   postData = isRetweet ? postData.retweetData : postData
   const retweetedBy = isRetweet ? postData.postedBy.username : ""
+
+  if (postData.postedBy === undefined) {
+    return console.log("User object not populated");
+  }
 
   const displayName = postData.postedBy.firstName + " " + postData.postedBy.lastName
   const timestamp = timeDifference(new Date(), new Date(postData.createdAt))
@@ -128,6 +148,24 @@ function createPostHtml(postData) {
       <i class='fas fa-retweet'></i>
       Retweeted by <a href='/profile/${retweetedBy}'>@${retweetedBy}</a>
     </span>`
+  }
+
+  let replyFlag = ""
+  if (postData.replyTo) {
+
+    if (!postData.replyTo._id) {
+      return alert("ReplyTo is not populated!")
+    } else if (!postData.replyTo.postedBy._id) {
+      return alert("ReplyTo.postedBy is not populated!")
+    }
+
+    const replyToUsername = postData.replyTo.postedBy.username
+
+    replyFlag = `<div class='replyFlag'>
+      Replying to <a herf='/profile/${replyToUsername}'>@${replyToUsername}</a>
+      
+    </div>`
+
   }
 
   return `<div class='post' data-id='${postData._id}'>
@@ -144,6 +182,7 @@ function createPostHtml(postData) {
                   <span class='username'>@${postData.postedBy.username}</span>
                   <span class='date'>${timestamp}</span>
                 </div>
+                ${replyFlag}
                 <div class='postBody'>
                   <span>${postData.content}</span>
                 </div>
