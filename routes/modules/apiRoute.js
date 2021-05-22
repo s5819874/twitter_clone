@@ -7,8 +7,16 @@ const Post = require('../../models/postSchema')
 router.get('/posts', (req, res) => {
   Post.find()
     .populate("postedBy")
+    .populate("retweetData")
     .sort({ "createdAt": -1 })
-    .then(results => res.status(200).send(results))
+    .then(results => {
+      User.populate(results, { path: "retweetData.postedBy" })
+        .then(results => res.status(200).send(results))
+        .catch(err => {
+          console.log(err)
+          res.sendStatus(400)
+        })
+    })
     .catch(err => {
       console.log(err)
       res.sendStatus(400)
@@ -58,6 +66,46 @@ router.put('/posts/:id/like', async (req, res) => {
 
   //insert to Post
   const postUpdated = await Post.findByIdAndUpdate(postId, { [option]: { likes: userId } }, { new: true })
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(400)
+    })
+
+  return res.status(200).send(postUpdated)
+})
+
+router.post('/posts/:id/retweet', async (req, res) => {
+  const userId = req.user._id
+  const postId = req.params.id
+
+  //unretweet post if deletePost returns true
+  const deletePost = await Post.findOneAndDelete({ postedBy: userId, retweetData: postId })
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(400)
+    })
+
+  let rePost = deletePost
+  const option = rePost ? "$pull" : "$addToSet"
+
+  //retweet post
+  if (!rePost) {
+    rePost = await Post.create({ postedBy: userId, retweetData: postId })
+      .catch(err => {
+        console.log(err)
+        res.sendStatus(400)
+      })
+  }
+
+  // update User
+  req.user = await User.findByIdAndUpdate(userId, { [option]: { retweets: rePost._id } }, { new: true })
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(400)
+    })
+
+  //update Post
+  const postUpdated = await Post.findByIdAndUpdate(postId, { [option]: { retweetUsers: userId } }, { new: true })
     .catch(err => {
       console.log(err)
       res.sendStatus(400)

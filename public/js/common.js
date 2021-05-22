@@ -55,6 +55,29 @@ $(document).on("click", ".likeButton", event => {
   })
 })
 
+$(document).on("click", ".retweetButton", event => {
+  const button = $(event.target)
+  const postId = getPostIdFromElement(button)
+
+  if (!postId) return
+
+  $.ajax({
+
+    url: `/api/posts/${postId}/retweet`,
+    type: "POST",
+    success: (postData) => {
+      button.find("span").text(postData.retweetUsers.length || "")
+
+      if (postData.retweetUsers.includes(userLoggedIn._id)) {
+        return button.addClass("active")
+      }
+      button.removeClass("active")
+
+    }
+
+  })
+})
+
 function getPostIdFromElement(element) {
   const isRoot = element.hasClass("post")
   const rootElement = isRoot ? element : element.closest(".post")
@@ -66,11 +89,32 @@ function getPostIdFromElement(element) {
 
 function createPostHtml(postData) {
 
+  if (!postData) alert("postData undefined!")
+
+  const isRetweet = postData.retweetData !== undefined
+
+  //retweetPost content
+  postData = isRetweet ? postData.retweetData : postData
+  const retweetedBy = isRetweet ? postData.postedBy.username : ""
+
   const displayName = postData.postedBy.firstName + " " + postData.postedBy.lastName
   const timestamp = timeDifference(new Date(), new Date(postData.createdAt))
+
   const likeButtonActiveClass = postData.likes.includes(userLoggedIn._id) ? "active" : ""
+  const retweetButtonActiveClass = postData.retweetUsers.includes(userLoggedIn._id) ? "active" : ""
+
+  let retweetText = ""
+  if (isRetweet) {
+    retweetText = `<span>
+      <i class='fas fa-retweet'></i>
+      Retweeted by <a href='/profile/${retweetedBy}'>@${retweetedBy}</a>
+    </span>`
+  }
 
   return `<div class='post' data-id='${postData._id}'>
+            <div class='retweetInfoContainer'>
+              ${retweetText}
+            </div>
             <div class='mainContentContainer'>
               <div class='userImageContainer'>
               <img src=${postData.postedBy.profilePic}>
@@ -90,9 +134,10 @@ function createPostHtml(postData) {
                       <i class='far fa-comment'></i>
                     </button>
                   </div>
-                  <div class='postButtonContainer'>
-                    <button>
+                  <div class='postButtonContainer green'>
+                    <button class='retweetButton ${retweetButtonActiveClass}'>
                       <i class='fas fa-retweet'></i>
+                      <span>${postData.retweetUsers.length || ""}</span>
                     </button>
                   </div>
                   <div class='postButtonContainer red'>
