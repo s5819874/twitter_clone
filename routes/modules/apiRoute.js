@@ -4,24 +4,17 @@ const router = express.Router()
 const User = require('../../models/userSchema')
 const Post = require('../../models/postSchema')
 
-router.get('/posts', (req, res) => {
-  Post.find()
-    .populate("postedBy")
-    .populate("retweetData")
-    .sort({ "createdAt": -1 })
-    .then(results => {
-      User.populate(results, { path: "retweetData.postedBy" })
-        .then(results => res.status(200).send(results))
-        .catch(err => {
-          console.log(err)
-          res.sendStatus(400)
-        })
-    })
-    .catch(err => {
-      console.log(err)
-      res.sendStatus(400)
-    })
+router.get('/posts', async (req, res) => {
+  const results = await getPosts({})
+  return res.status(200).send(results)
+})
 
+router.get('/posts/:id', async (req, res) => {
+  const postId = req.params.id
+  let results = await getPosts({ _id: postId })
+
+  results = results[0]
+  return res.status(200).send(results)
 })
 
 router.post('/posts', (req, res) => {
@@ -113,5 +106,15 @@ router.post('/posts/:id/retweet', async (req, res) => {
 
   return res.status(200).send(postUpdated)
 })
+
+async function getPosts(filter) {
+  let results = await Post.find(filter)
+    .populate("postedBy")
+    .populate("retweetData")
+    .sort({ "createdAt": -1 })
+    .catch(err => console.log(err))
+
+  return await User.populate(results, { path: "retweetData.postedBy" })
+}
 
 module.exports = router

@@ -1,7 +1,10 @@
-$("#postTextarea").keyup(event => {
+$("#postTextarea, #replyTextarea").keyup(event => {
   let textBox = $(event.target)
   let value = textBox.val().trim()
-  let submitButton = $("#submitPostButton")
+
+  let isModal = textBox.parents(".modal").length
+
+  let submitButton = isModal ? $("#submitReplyButton") : $("#submitPostButton")
 
   //確認按鈕存在
   if (submitButton.length === 0) return alert("No submit button found")
@@ -27,6 +30,22 @@ $("#submitPostButton").click(event => {
 
     if ($(".noResults")) $(".noResults").remove()
   })
+})
+
+// when modal pops up
+$("#replyModal").on("show.bs.modal", event => {
+  const button = $(event.relatedTarget)
+  const postId = getPostIdFromElement(button)
+
+  $.get("/api/posts/" + postId, results => {
+    outputPosts(results, $("#originalPostContainer"))
+  })
+
+})
+
+// when modal hiddens 
+$("#replyModal").on("hidden.bs.modal", event => {
+  $("#originalPostContainer").html("")
 })
 
 $(document).on("click", ".likeButton", event => {
@@ -130,7 +149,7 @@ function createPostHtml(postData) {
                 </div>
                 <div class='postFooter'>
                   <div class='postButtonContainer'>
-                    <button>
+                    <button data-toggle='modal' data-target='#replyModal'>
                       <i class='far fa-comment'></i>
                     </button>
                   </div>
@@ -150,6 +169,24 @@ function createPostHtml(postData) {
               </div>
             </div>
           </div>`
+}
+
+function outputPosts(results, container) {
+
+  if (results.length === 0) {
+    return container.append("<span class='noResults'>Nothing to show.</span>") //網頁元素用append加入
+  }
+
+  container.html("")
+
+  if (!Array.isArray(results)) {
+    results = [results]
+  }
+
+  results.forEach(result => {
+    let html = createPostHtml(result)
+    container.append(html)
+  })
 }
 
 //以後改用moment.js
