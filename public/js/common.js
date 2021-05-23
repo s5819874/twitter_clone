@@ -179,6 +179,14 @@ function createPostHtml(postData, largeFont = false) {
 
   let largeFontClass = largeFont ? "largeFont" : ""
 
+  //delete button
+  let button = ""
+  if (postData.postedBy._id === userLoggedIn._id) {
+    button = `<button data-id="${postData._id}" data-toggle="modal" data-target="#deletePostModal">
+      <i class="fas fa-times"></i>
+    </button >`
+  }
+
   return `<div class='post ${largeFontClass}' data-id='${postData._id}'>
             <div class='retweetInfoContainer'>
               ${retweetText}
@@ -192,6 +200,7 @@ function createPostHtml(postData, largeFont = false) {
                   <a href='/profile/${postData.postedBy.username}' class='displayName'>${displayName}</a>
                   <span class='username'>@${postData.postedBy.username}</span>
                   <span class='date'>${timestamp}</span>
+                  ${button}
                 </div>
                 ${replyFlag}
                 <div class='postBody'>
