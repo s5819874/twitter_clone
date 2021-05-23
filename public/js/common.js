@@ -54,7 +54,7 @@ $("#replyModal").on("show.bs.modal", event => {
   $("#submitReplyButton").data("id", postId)
 
   $.get("/api/posts/" + postId, results => {
-    outputPosts(results, $("#originalPostContainer"))
+    outputPosts(results.postData, $("#originalPostContainer"))
   })
 
 })
@@ -161,7 +161,7 @@ function createPostHtml(postData) {
   }
 
   let replyFlag = ""
-  if (postData.replyTo) {
+  if (postData.replyTo && postData.replyTo._id) {
 
     if (!postData.replyTo._id) {
       return alert("ReplyTo is not populated!")
@@ -234,6 +234,26 @@ function outputPosts(results, container) {
 
   results.forEach(result => {
     let html = createPostHtml(result)
+    container.append(html)
+  })
+}
+
+function outputPostsWithReplies(results, container) {
+
+  container.html("")
+
+  //如果點擊post是reply，並確保replyTo populated
+  if (results.replyTo && results.replyTo._id) {
+    let html = createPostHtml(results.replyTo)
+    container.append(html)
+  }
+
+  let mainPostHtml = createPostHtml(results.postData)
+  container.append(mainPostHtml)
+
+  //show replies
+  results.replies.forEach(reply => {
+    let html = createPostHtml(reply)
     container.append(html)
   })
 }

@@ -11,9 +11,22 @@ router.get('/posts', async (req, res) => {
 
 router.get('/posts/:id', async (req, res) => {
   const postId = req.params.id
-  let results = await getPosts({ _id: postId })
+  let postData = await getPosts({ _id: postId })
 
-  results = results[0]
+  postData = postData[0]
+
+  let results = {
+    postData: postData
+  }
+
+  //如果前端點擊post為reply，找出original post
+  if (postData.replyTo) {
+    results.replyTo = postData.replyTo
+  }
+
+  //找出所有replies
+  results.replies = await getPosts({ replyTo: postId })
+
   return res.status(200).send(results)
 })
 
