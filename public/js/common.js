@@ -46,7 +46,7 @@ $("#submitPostButton, #submitReplyButton").click(event => {
   })
 })
 
-// when modal pops up
+// when reply modal pops up
 $("#replyModal").on("show.bs.modal", event => {
   const button = $(event.relatedTarget)
   const postId = getPostIdFromElement(button)
@@ -59,9 +59,33 @@ $("#replyModal").on("show.bs.modal", event => {
 
 })
 
-// when modal hiddens 
+// when reply modal hiddens 
 $("#replyModal").on("hidden.bs.modal", event => {
   $("#originalPostContainer").html("")
+})
+
+// when delete modal opens
+$("#deletePostModal").on("show.bs.modal", event => {
+  const button = $(event.relatedTarget)
+  const postId = getPostIdFromElement(button)
+
+  $("#deletePostButton").data("id", postId)
+})
+
+$("#deletePostButton").click(event => {
+  const postId = $(event.target).data("id")
+
+  $.ajax({
+    url: `/api/posts/${postId}`,
+    type: "DELETE",
+    success: (data, status, xhr) => {
+      if (xhr.status !== 202) {
+        alert("Could not delete!")
+        return
+      }
+      return location.reload()
+    }
+  })
 })
 
 $(document).on("click", ".likeButton", event => {

@@ -138,4 +138,13 @@ async function getPosts(filter) {
   return await User.populate(results, { path: "replyTo.postedBy" })
 }
 
+router.delete('/posts/:id', async (req, res) => {
+  Post.findByIdAndDelete(req.params.id)
+    .then(() => res.sendStatus(202))
+    .catch(err => {
+      console.log(err)
+      return res.sendStatus(400)
+    })
+})
+
 module.exports = router
