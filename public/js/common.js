@@ -132,7 +132,7 @@ function getPostIdFromElement(element) {
   return postId
 }
 
-function createPostHtml(postData) {
+function createPostHtml(postData, largeFont = false) {
 
   if (postData === null) alert("postData undefined!")
 
@@ -175,10 +175,11 @@ function createPostHtml(postData) {
       Replying to <a herf='/profile/${replyToUsername}'>@${replyToUsername}</a>
       
     </div>`
-
   }
 
-  return `<div class='post' data-id='${postData._id}'>
+  let largeFontClass = largeFont ? "largeFont" : ""
+
+  return `<div class='post ${largeFontClass}' data-id='${postData._id}'>
             <div class='retweetInfoContainer'>
               ${retweetText}
             </div>
@@ -248,7 +249,7 @@ function outputPostsWithReplies(results, container) {
     container.append(html)
   }
 
-  let mainPostHtml = createPostHtml(results.postData)
+  let mainPostHtml = createPostHtml(results.postData, true)
   container.append(mainPostHtml)
 
   //show replies
