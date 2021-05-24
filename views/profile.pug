@@ -1,0 +1,12 @@
+extends layouts/main.pug
+
+block content 
+  if !profileUser
+    span.errMessage Please check the username in url!
+  else
+    span #{profileUser.username}
+    .postsContainer
+    +createPostModals(userLoggedIn)
+
+block script
+  script(src="/js/profile.js") 
