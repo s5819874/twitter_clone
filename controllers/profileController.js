@@ -5,9 +5,15 @@ const profileController = {
 
     //瀏覽別人profile
     if (req.params.username) {
-      const user = await User.findOne({ username: req.params.username })
+      const user = await User.findOne({
+        $or: [
+          { username: req.params.username },
+          { _id: req.params.username }
+        ]
+      })
+        .catch(err => console.log(err))
 
-      //檢查url中的username是否存在
+      //檢查url中的username/id是否存在
       if (!user) {
         const payload = {
           pageTitle: 'User not found',
@@ -16,7 +22,7 @@ const profileController = {
         }
         return res.status(200).render('profile', payload)
       }
-      //username存在
+      //username/id存在
       const payload = {
         pageTitle: user.username,
         userLoggedIn: req.user,
