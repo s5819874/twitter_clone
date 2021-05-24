@@ -5,13 +5,12 @@ const profileController = {
 
     //瀏覽別人profile
     if (req.params.username) {
-      const user = await User.findOne({
-        $or: [
-          { username: req.params.username },
-          { _id: req.params.username }
-        ]
-      })
+      let user = await User.findOne({ username: req.params.username })
         .catch(err => console.log(err))
+      if (!user) {
+        let user = await User.findById(req.params.username)
+          .catch(err => console.log(err))
+      }
 
       //檢查url中的username/id是否存在
       if (!user) {
@@ -21,6 +20,7 @@ const profileController = {
           userLoggedInJs: JSON.stringify(req.user),
         }
         return res.status(200).render('profile', payload)
+
       }
       //username/id存在
       const payload = {

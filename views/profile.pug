@@ -4,7 +4,14 @@ block content
   if !profileUser
     span.errMessage Please check the username in url!
   else
-    span #{profileUser.username}
+    .profileHeaderContainer
+      .coverPhotoContainer 
+        .userImageContainer 
+          img(src=profileUser.profilePic, alt="User profile photo")
+      .profileButtonsContainer
+        if (profileUser._id !== userLoggedIn._id)
+          a.profileButton(href=`/message/${profileUser.username}`)
+            i.fas.fa-envelope 
     .postsContainer
     +createPostModals(userLoggedIn)
 

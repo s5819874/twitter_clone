@@ -1,6 +1,7 @@
 :root {
     --blue: #1FA2F1;
     --blueLight: #9BD1F9;
+    --bluebackground: rgba(212,237,255,0.6);
     --buttonHoverBg: #d4edff;
     --lightGrey: rgb(230, 236, 240);
     --spacing: 15px;
@@ -249,4 +250,42 @@ button span {
 
 .errMessage {
     padding: var(--spacing);
+}
+
+.profileHeaderContainer .coverPhotoContainer {
+    background-color: var(--blue);
+    height: 180px;
+    position: relative;
+}
+
+.profileHeaderContainer .userImageContainer {
+    height: 132px;
+    width: 132px;
+    margin-left: var(--spacing);
+    position: absolute;
+    bottom: -66px;
+}
+
+.profileHeaderContainer .userImageContainer img {
+    border: 4px solid white;
+}
+
+.profileHeaderContainer .profileButtonsContainer {
+    text-align: right;
+    min-height: 66px;
+    padding: var(--spacing);
+}
+
+.profileButton {
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    padding: 5px 15px;
+    border-radius: 60px;
+    font-weight: bold;
+    display: inline-block;
+    margin-left: var(--spacing);
+}
+
+.profileButton:hover {
+    background-color: var(--bluebackground);
 }
