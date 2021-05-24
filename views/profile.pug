@@ -13,6 +13,19 @@ block content
           a.profileButton(href=`/message/${profileUser.username}`)
             i.fas.fa-envelope 
           +createFollowButtton(profileUser, false)
+      .userDetailContainer 
+        sapn.displayName #{profileUser.firstName} #{profileUser.lastName}
+        span.username @#{profileUser.username}
+        span.description #{profileUser.description}
+
+        .followersContainer
+          a(href=`/profile/${profileUser.username}/following`)
+            span.value #{0} 
+            span Following
+          a(href=`/profile/${profileUser.username}/followers`)
+            span.value #{0} 
+            span Followers
+  
     .postsContainer
     +createPostModals(userLoggedIn)
 
