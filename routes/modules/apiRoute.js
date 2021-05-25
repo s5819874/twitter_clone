@@ -6,11 +6,11 @@ const Post = require('../../models/postSchema')
 
 router.get('/posts', async (req, res) => {
 
-  let { postedBy, isReply } = req.query
+  let searchObj = req.query
 
-  let searchObj = {
-    postedBy: postedBy,
-    replyTo: { $exists: isReply == "true" }
+  if (searchObj.isReply !== undefined) {
+    searchObj.replyTo = { $exists: searchObj.isReply == "true" }
+    delete searchObj.isReply
   }
 
   const results = await getPosts(searchObj)
@@ -37,6 +37,7 @@ router.get('/posts/:id', async (req, res) => {
 
   return res.status(200).send(results)
 })
+
 
 router.post('/posts', (req, res) => {
   //handle bad request

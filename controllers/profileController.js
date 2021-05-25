@@ -23,17 +23,21 @@ const profileController = {
 
       }
       //username/id存在
-      const payload = {
+      let payload = {
         pageTitle: user.username,
         userLoggedIn: req.user,
         userLoggedInJs: JSON.stringify(req.user),
         profileUser: user
       }
+      if (req.url.match(/.*replies$/)) {
+        payload.selectedTab = "replies"
+      }
+
       return res.status(200).render('profile', payload)
     }
 
     //瀏覽自己profile
-    const payload = {
+    let payload = {
       pageTitle: req.user.username,
       userLoggedIn: req.user,
       userLoggedInJs: JSON.stringify(req.user),
