@@ -4,6 +4,9 @@ block content
   if !profileUser
     span.errMessage Please check the username in url!
   else
+    script.
+      const profileUserId = "!{profileUser._id}"
+
     .profileHeaderContainer
       .coverPhotoContainer 
         .userImageContainer 
@@ -25,6 +28,9 @@ block content
           a(href=`/profile/${profileUser.username}/followers`)
             span.value #{0} 
             span Followers
+    .tabsContainer
+      +createTab("Posts", `/posts/${profileUser.username}`, true)
+      +createTab("Replies", `/posts/${profileUser.username}/replies`, false)
   
     .postsContainer
     +createPostModals(userLoggedIn)

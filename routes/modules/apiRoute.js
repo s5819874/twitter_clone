@@ -5,7 +5,15 @@ const User = require('../../models/userSchema')
 const Post = require('../../models/postSchema')
 
 router.get('/posts', async (req, res) => {
-  const results = await getPosts({})
+
+  let { postedBy, isReply } = req.query
+
+  let searchObj = {
+    postedBy: postedBy,
+    replyTo: { $exists: isReply == "true" }
+  }
+
+  const results = await getPosts(searchObj)
   return res.status(200).send(results)
 })
 

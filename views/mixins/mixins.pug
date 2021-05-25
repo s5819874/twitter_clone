@@ -49,4 +49,9 @@ mixin createFollowButtton (user, isFollowing)
   - buttonClass = isFollowing ? "followButton following" : "followButton"
   button(class=buttonClass) #{text} 
 
+mixin createTab(name, herf, isSelected)
+  - tabClass = isSelected ? "tab active" : "tab"
+  a(href=herf class=tabClass) 
+    span #{name}
+
 
