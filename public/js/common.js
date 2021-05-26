@@ -137,6 +137,30 @@ $(document).on("click", ".retweetButton", event => {
   })
 })
 
+$(document).on("click", ".followButton", event => {
+  let button = $(event.target)
+  const userId = button.data().userid
+
+  $.ajax({
+
+    url: `/api/users/${userId}/follow`,
+    type: "PUT",
+    success: (data, status, xhr) => {
+      if (xhr.status === 404) {
+        return alert("User not found")
+      }
+
+      if (data.following && data.following.includes(userId)) {
+        button.addClass("following")
+        button.text("Following")
+      } else {
+        button.removeClass("following")
+        button.text("Follow")
+      }
+    }
+  })
+})
+
 $(document).on("click", ".post", event => {
   const element = $(event.target)
   const postId = getPostIdFromElement(element)

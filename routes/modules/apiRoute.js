@@ -3,6 +3,7 @@ const router = express.Router()
 
 const User = require('../../models/userSchema')
 const Post = require('../../models/postSchema')
+const { countDocuments } = require('../../models/userSchema')
 
 router.get('/posts', async (req, res) => {
 
@@ -154,6 +155,31 @@ router.delete('/posts/:id', async (req, res) => {
       console.log(err)
       return res.sendStatus(400)
     })
+})
+
+router.put('/users/:userId/follow', async (req, res) => {
+  const userId = req.params.userId
+  const user = await User.findById(userId)
+
+  if (!user) return res.sendStatus(404)
+
+  const isFollowing = user.followers && user.followers.includes(req.user._id)
+
+  const option = isFollowing ? "$pull" : "$addToSet"
+
+  req.user = await User.findByIdAndUpdate(req.user._id, { [option]: { "following": user._id } }, { new: true })
+    .catch(err => {
+      console.log(err)
+      return res.sendStatus(400)
+    })
+
+  User.findByIdAndUpdate(userId, { [option]: { "followers": req.user._id } })
+    .catch(err => {
+      console.log(err)
+      return res.sendStatus(400)
+    })
+
+  return res.status(200).send(req.user)
 })
 
 module.exports = router
