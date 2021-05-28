@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
-const URI = 'mongodb+srv://root:rootroot@twitterclonecluster.qimdf.mongodb.net/TwitterCloneDB?retryWrites=true&w=majority'
+const URI = 'mongodb://localhost/TwitterClone'
 
 //'mongodb://localhost/TwitterClone'
+//'mongodb+srv://root:rootroot@twitterclonecluster.qimdf.mongodb.net/TwitterCloneDB?retryWrites=true&w=majority'
 
 mongoose.connect(URI, {
   useNewUrlParser: true,

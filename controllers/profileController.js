@@ -32,6 +32,14 @@ const profileController = {
       if (req.url.match(/.*replies$/)) {
         payload.selectedTab = "replies"
       }
+      if (req.url.match(/.*following$/)) {
+        payload.selectedTab = "following"
+        return res.status(200).render('followship', payload)
+      }
+      if (req.url.match(/.*followers$/)) {
+        payload.selectedTab = "followers"
+        return res.status(200).render('followship', payload)
+      }
 
       return res.status(200).render('profile', payload)
     }

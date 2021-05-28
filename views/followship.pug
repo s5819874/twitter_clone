@@ -1,0 +1,19 @@
+extends layouts/main.pug
+
+block content 
+  if !profileUser
+    span.errMessage Please check the username in url!
+  else
+    script.
+      const profileUserId = "!{profileUser._id}"
+      const selectedTab = "!{selectedTab}"
+
+    .tabsContainer
+      +createTab("Following", `/profile/${profileUser.username}/following`, selectedTab !== "followers")
+      +createTab("Followers", `/profile/${profileUser.username}/followers`, selectedTab === "followers")
+  
+    .usersContainer
+
+
+block script
+  script(src="/js/followship.js") 

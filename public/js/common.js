@@ -150,12 +150,17 @@ $(document).on("click", ".followButton", event => {
         return alert("User not found")
       }
 
+      let followerCountDisplay = $("#followerCount")
+      let followerCount = parseInt(followerCountDisplay.text())
+
       if (data.following && data.following.includes(userId)) {
         button.addClass("following")
         button.text("Following")
+        followerCountDisplay.text(`${followerCount + 1}`)
       } else {
         button.removeClass("following")
         button.text("Follow")
+        followerCountDisplay.text(`${followerCount - 1}`)
       }
     }
   })
