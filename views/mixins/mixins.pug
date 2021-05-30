@@ -44,10 +44,10 @@ mixin createPostModals(userLoggedIn)
   +createReplyModal(userLoggedIn)
   +createDeletePostModal()
 
-mixin createFollowButtton (user, isFollowing)
+mixin createFollowButtton(user, isFollowing)
   - text = isFollowing ? "Following" : "Follow"
   - buttonClass = isFollowing ? "followButton following" : "followButton"
-  button(class=buttonClass data-userid=user._id) #{text} 
+  button(class=buttonClass, data-userid=user._id) #{text} 
 
 mixin createTab(name, herf, isSelected)
   - tabClass = isSelected ? "tab active" : "tab"
