@@ -40,6 +40,23 @@ mixin createDeletePostModal()
           button.btn.btn-secondary(type='button', data-dismiss='modal') Close
           button#deletePostButton.btn.btn-primary(type='button') Delete
 
+mixin createImageUploadModal()
+  #imageUploadModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='imageUploadModalLabel', aria-hidden='true')
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5#imageUploadModalLabel.modal-title Upload new profile picture
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+            span(aria-hidden='true') &times;
+        .modal-body
+          input#filePhoto(type="file", name="filePhoto")
+
+          .imagePreviewContainer
+            img#imagePreview(src="", alt="") 
+        .modal-footer
+          button.btn.btn-secondary(type='button', data-dismiss='modal') Cancle 
+          button#imageUploadButton.btn.btn-primary(type='button') Save
+
 mixin createPostModals(userLoggedIn)
   +createReplyModal(userLoggedIn)
   +createDeletePostModal()
