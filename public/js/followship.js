@@ -40,10 +40,9 @@ function createUserHtml(user, showButton) {
   const buttonClass = isFollowing ? "followButton following" : "followButton"
 
   let followButton = ""
-
   if (showButton && userLoggedIn._id !== user._id) {
     followButton = `<div class='followButtonContainer'>
-                      <button class='${buttonClass}' data-id='${user._id}'>${text}</button>
+                      <button class='${buttonClass}' data-userid='${user._id}'>${text}</button>
                     </div>`
   }
 

@@ -160,6 +160,10 @@ router.delete('/posts/:id', async (req, res) => {
 router.put('/users/:userId/follow', async (req, res) => {
   const userId = req.params.userId
   const user = await User.findById(userId)
+    .catch(err => {
+      console.log(err)
+      return res.sendStatus(400)
+    })
 
   if (!user) return res.sendStatus(404)
 

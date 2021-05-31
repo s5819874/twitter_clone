@@ -22,9 +22,9 @@ block content
 
           - const profileUserId = profileUser._id.toString()
           - if(userLoggedIn.following && userLoggedIn.following.includes(profileUserId))
-            +createFollowButtton(profileUser, true)
+              +createFollowButtton(profileUser, true)
           - else
-            +createFollowButtton(profileUser, false)
+              +createFollowButtton(profileUser, false)
 
       .userDetailContainer 
         sapn.displayName #{profileUser.firstName} #{profileUser.lastName}
