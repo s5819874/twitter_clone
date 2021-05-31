@@ -14,6 +14,16 @@ router.get('/posts', async (req, res) => {
     delete searchObj.isReply
   }
 
+  //only showing following user's and userself's posts
+  if (searchObj.followingOnly) {
+
+    objectIds = req.user.following
+    objectIds.push(req.user._id)
+
+    searchObj.postedBy = { $in: objectIds }
+    delete searchObj.followingOnly
+  }
+
   const results = await getPosts(searchObj)
   return res.status(200).send(results)
 })
