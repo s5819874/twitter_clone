@@ -20,11 +20,14 @@ block content
           a.profileButton(href=`/message/${profileUser.username}`)
             i.fas.fa-envelope 
 
-          - const profileUserId = profileUser._id.toString()
-          - if(userLoggedIn.following && userLoggedIn.following.includes(profileUserId))
-              +createFollowButtton(profileUser, true)
-          - else
-              +createFollowButtton(profileUser, false)
+          - let profileUserId = profileUser._id.toString()
+          - userLoggedIn.following = userLoggedIn.following.map(id => id.toString())
+          - let isFollowing = userLoggedIn.following !== undefined && userLoggedIn.following.includes(profileUserId)
+
+          if isFollowing
+            +createFollowButtton(profileUser, true)
+          else
+            +createFollowButtton(profileUser, false)
 
       .userDetailContainer 
         sapn.displayName #{profileUser.firstName} #{profileUser.lastName}
