@@ -136,6 +136,51 @@ $("#imageUploadButton").click(() => {
   })
 })
 
+//cover photo upload preview
+$("#coverPhoto").change(function () {
+  if (this.files && this.files[0]) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      let image = document.getElementById("coverPreview")
+      image.src = e.target.result
+
+      if (cropper !== undefined) cropper.destroy()
+
+      cropper = new Cropper(image, {
+        aspectRatio: 16 / 9,
+        background: false
+
+      })
+    }
+    reader.readAsDataURL(this.files[0])
+  }
+})
+
+//cover photo upload
+$("#coverPhotoButton").click(() => {
+  let canvas = cropper.getCroppedCanvas()
+
+  if (canvas === null) {
+    alert("Counld not upload file, is it a image file?")
+    return
+  }
+
+  //把截圖的部分轉成blob資料型式，放進formData中透過ajax call傳至server
+  canvas.toBlob(blob => {
+    let formData = new FormData()
+    formData.append("croppedImage", blob)
+
+    $.ajax({
+      url: "/api/users/coverPhoto",
+      type: "POST",
+      data: formData,
+      processData: false, //不要轉成JSON
+      contentType: false,
+      success: () => location.reload()
+    })
+  })
+})
+
 
 $(document).on("click", ".likeButton", event => {
   const button = $(event.target)

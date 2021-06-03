@@ -12,7 +12,14 @@ block content
     - let followerCount = profileUser.followers.length
 
     .profileHeaderContainer
-      .coverPhotoContainer 
+      .coverPhotoSection
+        .coverPhotoContainer
+          img(src=profileUser.coverPhoto, alt="")
+          
+          if userLoggedIn._id === profileUser._id
+            button.coverPhotoButton(data-toggle="modal", data-target="#coverPhotoModal") 
+              i.fas.fa-camera  
+
         .userImageContainer 
           img(src=profileUser.profilePic, alt="User profile photo")
 
@@ -55,6 +62,7 @@ block content
     .postsContainer
     +createPostModals(userLoggedIn)
     +createImageUploadModal()
+    +createCoverPhotoModal()
 
 block script
   script(src="/js/profile.js") 
