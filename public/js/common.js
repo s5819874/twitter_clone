@@ -111,6 +111,31 @@ $("#filePhoto").change(function () {
   }
 })
 
+//image upload
+$("#imageUploadButton").click(() => {
+  let canvas = cropper.getCroppedCanvas()
+
+  if (canvas === null) {
+    alert("Counld not upload file, is it a image file?")
+    return
+  }
+
+  //把截圖的部分轉成blob資料型式，放進formData中透過ajax call傳至server
+  canvas.toBlob(blob => {
+    let formData = new FormData()
+    formData.append("croppedImage", blob)
+
+    $.ajax({
+      url: "/api/users/profilePicture",
+      type: "POST",
+      data: formData,
+      processData: false, //不要轉成JSON
+      contentType: false,
+      success: () => location.reload()
+    })
+  })
+})
+
 
 $(document).on("click", ".likeButton", event => {
   const button = $(event.target)

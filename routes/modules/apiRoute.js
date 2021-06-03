@@ -1,6 +1,10 @@
 const express = require('express')
 const router = express.Router()
+const multer = require('multer')
+const path = require('path')
+const fs = require('fs')
 
+const upload = multer({ dest: "uploads/" })
 const User = require('../../models/userSchema')
 const Post = require('../../models/postSchema')
 const { countDocuments } = require('../../models/userSchema')
@@ -218,6 +222,32 @@ router.get('/users/:id/followers', (req, res) => {
       console.log(error);
       res.sendStatus(400);
     })
+})
+
+router.post('/users/profilePicture', upload.single("croppedImage"), (req, res) => {
+
+  //檢查資料有無隨著ajax call傳來
+  if (!req.file) {
+    console.log("No file uploaded with ajax request.")
+    return res.sendStatus(400)
+  }
+
+  const filePath = `/uploads/images/${req.file.filename}.png`
+  const tempPath = req.file.path
+  const targetPath = path.join(__dirname, `../../${filePath}`)
+
+  fs.rename(tempPath, targetPath, async (err) => {
+    if (err) {
+      console.log(err)
+      return res.sendStatus(400)
+    }
+
+    req.user = await User.findByIdAndUpdate(req.user._id, { profilePic: filePath }, { new: true })
+
+    return res.sendStatus(200)
+  })
+
+
 })
 
 module.exports = router
