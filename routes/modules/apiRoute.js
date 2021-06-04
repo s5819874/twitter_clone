@@ -171,6 +171,24 @@ router.delete('/posts/:id', async (req, res) => {
     })
 })
 
+router.put('/posts/:id', async (req, res) => {
+  if (req.body.pinned !== undefined) {
+    await Post.updateMany({ posted: req.user._id }, { pinned: false })
+      .catch(err => {
+        console.log(err)
+        return res.sendStatus(400)
+      })
+  }
+
+  await Post.findByIdAndUpdate(req.params.id, req.body)
+    .catch(err => {
+      console.log(err)
+      return res.sendStatus(400)
+    })
+
+  return res.sendStatus(204)
+})
+
 router.put('/users/:userId/follow', async (req, res) => {
   const userId = req.params.userId
   const user = await User.findById(userId)

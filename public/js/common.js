@@ -75,6 +75,7 @@ $("#deletePostModal").on("show.bs.modal", event => {
   $("#deletePostButton").data("id", postId)
 })
 
+
 $("#deletePostButton").click(event => {
   const postId = $(event.target).data("id")
 
@@ -84,6 +85,56 @@ $("#deletePostButton").click(event => {
     success: (data, status, xhr) => {
       if (xhr.status !== 202) {
         alert("Could not delete!")
+        return
+      }
+      return location.reload()
+    }
+  })
+})
+
+// when pin post modal opens
+$("#pinPostModal").on("show.bs.modal", event => {
+  const button = $(event.relatedTarget)
+  const postId = getPostIdFromElement(button)
+
+  $("#pinPostButton").data("id", postId)
+})
+
+$("#pinPostButton").click(event => {
+  const postId = $(event.target).data("id")
+
+  $.ajax({
+    url: `/api/posts/${postId}`,
+    type: "PUT",
+    data: { pinned: true },
+    success: (data, status, xhr) => {
+      if (xhr.status !== 204) {
+        alert("Could not pin!")
+        return
+      }
+      return location.reload()
+    }
+  })
+})
+
+// when unpin post modal opens
+$("#unpinPostModal").on("show.bs.modal", event => {
+  const button = $(event.relatedTarget)
+  const postId = getPostIdFromElement(button)
+
+  $("#unpinPostButton").data("id", postId)
+})
+
+$("#unpinPostModal").click(event => {
+  const postId = $(event.target).data("id")
+
+  $.ajax({
+    url: `/api/posts/${postId}`,
+    type: "PUT",
+    data: { pinned: false },
+    success: (data, status, xhr) => {
+      if (xhr.status !== 204) {
+        alert("Could not unpin!")
         return
       }
       return location.reload()
@@ -328,10 +379,24 @@ function createPostHtml(postData, largeFont = false) {
 
   //delete button
   let button = ""
+  let pinnedPostText = ""
+
   if (postData.postedBy._id === userLoggedIn._id) {
-    button = `<button data-id="${postData._id}" data-toggle="modal" data-target="#deletePostModal">
-      <i class="fas fa-times"></i>
-    </button >`
+
+    let pinButtonClass = ""
+    let targetModal = "#pinPostModal"
+    if (postData.pinned === true) {
+      pinButtonClass = "active"
+      pinnedPostText = "<i class='fas fa-thumbtack'></i><span> Pinned post </span>"
+      targetModal = "#unpinPostModal"
+    }
+
+    button = `<button class="pinButton ${pinButtonClass}" data-id="${postData._id}" data-toggle="modal" data-target="${targetModal}">
+                <i class="fas fa-thumbtack"></i>
+              </button >
+              <button data-id="${postData._id}" data-toggle="modal" data-target="#deletePostModal">
+                <i class="fas fa-times"></i>
+              </button >`
   }
 
   return `<div class='post ${largeFontClass}' data-id='${postData._id}'>
@@ -343,6 +408,7 @@ function createPostHtml(postData, largeFont = false) {
               <img src=${postData.postedBy.profilePic}>
               </div>
               <div class='postContentContainer'>
+                <div class='pinnedPostText'>${pinnedPostText}</div>
                 <div class='header'>
                   <a href='/profile/${postData.postedBy.username}' class='displayName'>${displayName}</a>
                   <span class='username'>@${postData.postedBy.username}</span>
@@ -388,6 +454,20 @@ function outputPosts(results, container) {
   if (!Array.isArray(results)) {
     results = [results]
   }
+
+  results.forEach(result => {
+    let html = createPostHtml(result)
+    container.append(html)
+  })
+}
+
+function outputPinnedPost(results, container) {
+
+  if (results.length === 0) {
+    return container.hide()
+  }
+
+  container.html("")
 
   results.forEach(result => {
     let html = createPostHtml(result)

@@ -40,6 +40,34 @@ mixin createDeletePostModal()
           button.btn.btn-secondary(type='button', data-dismiss='modal') Close
           button#deletePostButton.btn.btn-primary(type='button') Delete
 
+mixin createPinPostModal()
+  #pinPostModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='pinPostModalLabel', aria-hidden='true')
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5#pinPostModalLabel.modal-title Pin this post ?
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+            span(aria-hidden='true') &times;
+        .modal-body
+          p The post will be pinned and appear at the top of your profile.
+        .modal-footer
+          button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+          button#pinPostButton.btn.btn-primary(type='button') Pin
+
+mixin createUnpinPostModal()
+  #unpinPostModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='unpinPostModalLabel', aria-hidden='true')
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5#unpinPostModalLabel.modal-title Unpin the post ?
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+            span(aria-hidden='true') &times;
+        .modal-body
+          p The post will be unpinned.
+        .modal-footer
+          button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+          button#unpinPostButton.btn.btn-primary(type='button') Unpin
+
 mixin createImageUploadModal()
   #imageUploadModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='imageUploadModalLabel', aria-hidden='true')
     .modal-dialog(role='document')
@@ -77,6 +105,8 @@ mixin createCoverPhotoModal()
 mixin createPostModals(userLoggedIn)
   +createReplyModal(userLoggedIn)
   +createDeletePostModal()
+  +createPinPostModal()
+  +createUnpinPostModal()
 
 mixin createFollowButtton(user, isFollowing)
   - text = isFollowing ? "Following" : "Follow"
