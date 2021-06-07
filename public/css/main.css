@@ -733,3 +733,26 @@ button span {
 .pinnedPostContainer {
     border-bottom: 10px solid rgb(230, 236, 240);
 }
+
+.searchBarContainer {
+    position: relative;
+    color: var(--greyText);
+    padding: 10px var(--spacing);
+}
+
+.searchBarContainer i {
+    position: absolute;
+    top:19px;
+    left: 28px;
+}
+
+#searchBox {
+    width: 100%;
+    height: 36px;
+    padding: 5px 15px 5px 40px;
+    border-radius: 50px;
+    border: none;
+    background-color: var(--lightGrey);
+    color: var(--greyText);
+
+}

@@ -9,6 +9,25 @@ const User = require('../../models/userSchema')
 const Post = require('../../models/postSchema')
 const { countDocuments } = require('../../models/userSchema')
 
+router.get('/users', async (req, res) => {
+
+  let searchObj = req.query
+
+  if (req.query !== undefined) {
+    searchObj = {
+      $or: [
+        { firstName: { $regex: req.query.search, $options: "i" } },
+        { lastName: { $regex: req.query.search, $options: "i" } },
+        { username: { $regex: req.query.search, $options: "i" } }
+      ]
+    }
+  }
+
+  User.find(searchObj)
+    .then(results => res.status(200).send(results))
+    .catch(err => comsole.log(err))
+})
+
 router.get('/posts', async (req, res) => {
 
   let searchObj = req.query
@@ -16,6 +35,11 @@ router.get('/posts', async (req, res) => {
   if (searchObj.isReply !== undefined) {
     searchObj.replyTo = { $exists: searchObj.isReply == "true" }
     delete searchObj.isReply
+  }
+
+  if (searchObj.search !== undefined) {
+    searchObj.content = { $regex: searchObj.search, $options: "i" }
+    delete searchObj.search
   }
 
   //only showing following user's and userself's posts
