@@ -1,5 +1,7 @@
 //globals
 let cropper
+let timer
+let selectedUsers = []
 
 $("#postTextarea, #replyTextarea").keyup(event => {
   let textBox = $(event.target)
@@ -140,6 +142,30 @@ $("#unpinPostModal").click(event => {
       return location.reload()
     }
   })
+})
+
+//search users for chatting
+$("#userSearchTextbox").keyup((event) => {
+
+  clearTimeout(timer)
+
+  let textbox = $(event.target)
+  let value = textbox.val()
+
+  if (value === "" && event.keycode === 8) {
+    // remove user from selection
+    return
+  }
+
+  setTimeout(() => {
+    value = value.trim()
+    if (value === "") {
+      $(".usersContainer").html("")
+    } else {
+      searchUser(value)
+    }
+  }, 1000)
+
 })
 
 //image upload preview
@@ -531,4 +557,82 @@ function timeDifference(current, previous) {
   else {
     return Math.round(elapsed / msPerYear) + ' years ago';
   }
+}
+
+function outputUsers(userlist, container) {
+  container.html("")
+
+  userlist.forEach(user => {
+    let html = createUserHtml(user, true)
+    container.append(html)
+  })
+
+  if (userlist.length === 0) {
+    container.append("<span class='noResults'> No results found! </span>")
+  }
+}
+
+function createUserHtml(user, showButton) {
+
+  const displayName = user.firstName + " " + user.lastName
+  const isFollowing = userLoggedIn.following && userLoggedIn.following.includes(user._id)
+  const text = isFollowing ? "Following" : "Follow"
+  const buttonClass = isFollowing ? "followButton following" : "followButton"
+
+  let followButton = ""
+  if (showButton && userLoggedIn._id !== user._id) {
+    followButton = `<div class='followButtonContainer'>
+                      <button class='${buttonClass}' data-userid='${user._id}'>${text}</button>
+                    </div>`
+  }
+
+  return `<div class='user'>
+
+            <div class='userImageContainer'>
+              <img src='${user.profilePic}'>
+            </div>
+
+            <div class='userDetailsContainer'>
+              <div class='header'>
+                <a href='/profile/${user.username}'>${displayName}</a>
+                <span class='username'>@${user.username}</span>
+              </div>
+            </div>
+            ${followButton}
+          </div>`
+}
+
+function searchUser(searchTerm) {
+  $.get("/api/users", { search: searchTerm }, results => {
+    outputSelectableUsers(results, $(".usersContainer"))
+  })
+}
+
+function outputSelectableUsers(userlist, container) {
+  container.html("")
+
+  userlist.forEach(user => {
+
+    if (user._id === userLoggedIn._id || selectedUsers.some(u => u._id === user._id)) {
+      return
+    }
+
+    let html = createUserHtml(user, true)
+    let element = $(html)
+
+    element.click(() => userSelected(user))
+
+    container.append(element)
+  })
+
+  if (userlist.length === 0) {
+    container.append("<span class='noResults'> No results found! </span>")
+  }
+}
+
+function userSelected(user) {
+  selectedUsers.push(user)
+  $("#userSearchTextbox").val("")
+  $(".usersContainer").html("")
+  $("#createChatButton").prop("disabled", false)
 }

@@ -9,6 +9,27 @@ const User = require('../../models/userSchema')
 const Post = require('../../models/postSchema')
 const { countDocuments } = require('../../models/userSchema')
 
+router.get("/users", async (req, res, next) => {
+  var searchObj = req.query;
+
+  if (req.query.search !== undefined) {
+    searchObj = {
+      $or: [
+        { firstName: { $regex: req.query.search, $options: "i" } },
+        { lastName: { $regex: req.query.search, $options: "i" } },
+        { username: { $regex: req.query.search, $options: "i" } },
+      ]
+    }
+  }
+
+  User.find(searchObj)
+    .then(results => res.status(200).send(results))
+    .catch(error => {
+      console.log(error);
+      res.sendStatus(400);
+    })
+});
+
 router.get('/posts', async (req, res) => {
 
   let searchObj = req.query
