@@ -1,6 +1,5 @@
 //globals
 let cropper
-let timer
 let selectedUsers = []
 
 $("#postTextarea, #replyTextarea").keyup(event => {
@@ -147,13 +146,19 @@ $("#unpinPostModal").click(event => {
 //search users for chatting
 $("#userSearchTextbox").keyup((event) => {
 
-  clearTimeout(timer)
-
   let textbox = $(event.target)
   let value = textbox.val()
 
-  if (value === "" && event.keycode === 8) {
-    // remove user from selection
+  if (value === "" && event.which === 8 || event.keyCode === 8) {
+
+    //remove the latest element
+    selectedUsers.pop()
+    //update selected users html
+    updateSelectedUserHtml()
+    $(".usersContainer").html("")
+
+    if (selectedUsers.length === 0) $("#createChatButton").prop("disabled", true)
+
     return
   }
 
@@ -165,6 +170,20 @@ $("#userSearchTextbox").keyup((event) => {
       searchUser(value)
     }
   }, 1000)
+
+})
+
+//create chat
+$("#createChatButton").click(event => {
+  const users = JSON.stringify(selectedUsers)
+
+  $.post("/api/chat", { users }, chat => {
+
+    if (!chat || !chat._id) return alert("No chat returned from the server.")
+
+    window.location.href = `/messages/${chat._id}`
+
+  })
 
 })
 
@@ -600,8 +619,6 @@ function createUserHtml(user, showButton) {
             </div>
             ${followButton}
           </div>`
-<<<<<<< HEAD
-=======
 }
 
 function searchUser(searchTerm) {
@@ -619,10 +636,10 @@ function outputSelectableUsers(userlist, container) {
       return
     }
 
-    let html = createUserHtml(user, true)
+    let html = createUserHtml(user, false)
     let element = $(html)
 
-    element.click(() => userSelected(user))
+    element.click(() => selectUser(user))
 
     container.append(element)
   })
@@ -632,10 +649,26 @@ function outputSelectableUsers(userlist, container) {
   }
 }
 
-function userSelected(user) {
+function selectUser(user) {
   selectedUsers.push(user)
+  updateSelectedUserHtml()
   $("#userSearchTextbox").val("")
   $(".usersContainer").html("")
   $("#createChatButton").prop("disabled", false)
->>>>>>> chat
+}
+
+function updateSelectedUserHtml() {
+  let elements = []
+  selectedUsers.forEach(u => {
+    const name = u.firstName + " " + u.lastName
+    const userElement = `<span class='selectedUser'>${name}</span>`
+    elements.push(userElement)
+
+  })
+
+  //每選擇一個user，selectedUserHtml要全部重新產生
+  $(".selectedUser").remove()
+  //prepend將新增元素放入第一個子元素之前
+  $("#selectedUsers").prepend(elements)
+
 }

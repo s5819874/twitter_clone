@@ -794,3 +794,13 @@ button span {
     color: var(--greyText);
 }
 
+.selectedUser {
+    font-weight: 300px;
+    color: #0084ff;
+    background-color: #cbe5fe;
+    border-radius: 3px;
+    padding: 5px;
+    margin: 5px 5px 0 0;
+    display: inline-block;
+}
+

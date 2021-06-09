@@ -7,7 +7,8 @@ const fs = require('fs')
 const upload = multer({ dest: "uploads/" })
 const User = require('../../models/userSchema')
 const Post = require('../../models/postSchema')
-const { countDocuments } = require('../../models/userSchema')
+const Chat = require('../../models/chatSchema')
+
 
 router.get("/users", async (req, res, next) => {
   var searchObj = req.query;
@@ -78,7 +79,6 @@ router.get('/posts/:id', async (req, res) => {
 
   return res.status(200).send(results)
 })
-
 
 router.post('/posts', (req, res) => {
   //handle bad request
@@ -318,6 +318,32 @@ router.post('/users/coverPhoto', upload.single("croppedImage"), (req, res) => {
   })
 
 
+})
+
+router.post('/chat', (req, res) => {
+  if (!req.body.users) {
+    console.log("Users param not sent with request.")
+    return res.sendStatus(400)
+  }
+
+  let users = JSON.parse(req.body.users)
+
+  if (users.length === 0) {
+    console.log("Users array is empty.")
+    return res.sendStatus(400)
+  }
+
+  const chatData = {
+    users,
+    isGruopChat: true
+  }
+
+  Chat.create(chatData)
+    .then(results => res.status(200).send(results))
+    .catch(err => {
+      console.log(err)
+      return res.sendStatus(400)
+    })
 })
 
 module.exports = router
