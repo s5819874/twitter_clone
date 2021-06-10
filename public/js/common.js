@@ -149,7 +149,7 @@ $("#userSearchTextbox").keyup((event) => {
   let textbox = $(event.target)
   let value = textbox.val()
 
-  if (value === "" && event.which === 8 || event.keyCode === 8) {
+  if (value === "" && (event.which === 8 || event.keyCode === 8)) {
 
     //remove the latest element
     selectedUsers.pop()
@@ -174,10 +174,10 @@ $("#userSearchTextbox").keyup((event) => {
 })
 
 //create chat
-$("#createChatButton").click(event => {
+$("#createChatButton").click(() => {
   const users = JSON.stringify(selectedUsers)
 
-  $.post("/api/chat", { users }, chat => {
+  $.post("/api/chats", { users }, chat => {
 
     if (!chat || !chat._id) return alert("No chat returned from the server.")
 
@@ -652,7 +652,7 @@ function outputSelectableUsers(userlist, container) {
 function selectUser(user) {
   selectedUsers.push(user)
   updateSelectedUserHtml()
-  $("#userSearchTextbox").val("")
+  $("#userSearchTextbox").val("").focus()
   $(".usersContainer").html("")
   $("#createChatButton").prop("disabled", false)
 }

@@ -320,7 +320,7 @@ router.post('/users/coverPhoto', upload.single("croppedImage"), (req, res) => {
 
 })
 
-router.post('/chat', (req, res) => {
+router.post('/chats', (req, res) => {
   if (!req.body.users) {
     console.log("Users param not sent with request.")
     return res.sendStatus(400)
@@ -333,12 +333,24 @@ router.post('/chat', (req, res) => {
     return res.sendStatus(400)
   }
 
+  users.push(req.user)
+
   const chatData = {
     users,
-    isGruopChat: true
+    isGroupChat: true
   }
 
   Chat.create(chatData)
+    .then(results => res.status(200).send(results))
+    .catch(err => {
+      console.log(err)
+      return res.sendStatus(400)
+    })
+})
+
+router.get('/chats', (req, res) => {
+  Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
+    .populate("users")
     .then(results => res.status(200).send(results))
     .catch(err => {
       console.log(err)
