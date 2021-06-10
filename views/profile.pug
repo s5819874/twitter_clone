@@ -29,7 +29,7 @@ block content
 
       .profileButtonsContainer
         if profileUser._id !== userLoggedIn._id
-          a.profileButton(href=`/message/${profileUser.username}`)
+          a.profileButton(href=`/messages/${profileUser._id}`)
             i.fas.fa-envelope 
 
           - let profileUserId = profileUser._id.toString()

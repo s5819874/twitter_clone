@@ -351,6 +351,7 @@ router.post('/chats', (req, res) => {
 router.get('/chats', (req, res) => {
   Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
     .populate("users")
+    .sort({ updatedAt: -1 })
     .then(results => res.status(200).send(results))
     .catch(err => {
       console.log(err)
