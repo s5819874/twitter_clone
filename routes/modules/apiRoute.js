@@ -176,18 +176,6 @@ router.post('/posts/:id/retweet', async (req, res) => {
   return res.status(200).send(postUpdated)
 })
 
-async function getPosts(filter) {
-  let results = await Post.find(filter)
-    .populate("postedBy")
-    .populate("retweetData")
-    .populate("replyTo")
-    .sort({ "createdAt": -1 })
-    .catch(err => console.log(err))
-
-  results = await User.populate(results, { path: "retweetData.postedBy" })
-  return await User.populate(results, { path: "replyTo.postedBy" })
-}
-
 router.delete('/posts/:id', async (req, res) => {
   Post.findByIdAndDelete(req.params.id)
     .then(() => res.sendStatus(202))
@@ -358,5 +346,17 @@ router.get('/chats', (req, res) => {
       return res.sendStatus(400)
     })
 })
+
+async function getPosts(filter) {
+  let results = await Post.find(filter)
+    .populate("postedBy")
+    .populate("retweetData")
+    .populate("replyTo")
+    .sort({ "createdAt": -1 })
+    .catch(err => console.log(err))
+
+  results = await User.populate(results, { path: "retweetData.postedBy" })
+  return await User.populate(results, { path: "replyTo.postedBy" })
+}
 
 module.exports = router

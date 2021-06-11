@@ -31,6 +31,7 @@ router.get('/', authenticator, (req, res, next) => {
     userLoggedIn: req.user,
     userLoggedInJs: JSON.stringify(req.user)
   }
+
   res.status(200).render('home', payload)
 })
 
