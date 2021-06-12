@@ -672,3 +672,21 @@ function updateSelectedUserHtml() {
   $("#selectedUsers").prepend(elements)
 
 }
+
+function getChatName(chat) {
+  let chatName = chat.chatName
+
+  if (!chatName) {
+    let otherUsers = getOtherUsers(chat.users)
+    let otherUserNameList = otherUsers.map(u => u.firstName + " " + u.lastName)
+    chatName = otherUserNameList.join(", ")
+  }
+
+  return chatName
+}
+
+function getOtherUsers(users) {
+  if (users.length === 1) return users
+
+  return users.filter(u => u._id !== userLoggedIn._id)
+}

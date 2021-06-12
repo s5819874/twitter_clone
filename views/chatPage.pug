@@ -4,10 +4,13 @@ block content
   if errMessage
     span.errMessage #{errMessage}
   else 
+    script. 
+      const chatId = '!{chat._id}'
+      
     .chatPageContainer 
       .chatTitleBarContainer
         +createChatImage(chat, userLoggedIn)
-        span#chatName This is the chat.
+        span#chatName(data-toggle="modal", data-target="#chatNameModal")
 
       .mainContentContainer
         .chatContainer
@@ -16,6 +19,8 @@ block content
             textarea(name="messageInput", placeholder="Type a message...")
             button.sendMessageButton
               i.fas.fa-paper-plane 
+
+  +chatNameModal(chat)
 
 block script
   script(src="/js/chatPage.js") 

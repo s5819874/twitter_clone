@@ -347,6 +347,29 @@ router.get('/chats', (req, res) => {
     })
 })
 
+router.get('/chats/:chatId', (req, res) => {
+  Chat.findOne({ _id: req.params.chatId, users: { $elemMatch: { $eq: req.user._id } } })
+    .populate("users")
+    .then(chat => {
+      res.status(200).send(chat)
+    })
+    .catch(err => {
+      console.log(err)
+      return res.sendStatus(400)
+    })
+})
+
+router.put('/chats/:chatId', (req, res) => {
+  Chat.findByIdAndUpdate(req.params.chatId, req.body)
+    .then((chat) => {
+      res.sendStatus(204)
+    })
+    .catch(err => {
+      console.log(err)
+      return res.sendStatus(400)
+    })
+})
+
 async function getPosts(filter) {
   let results = await Post.find(filter)
     .populate("postedBy")
