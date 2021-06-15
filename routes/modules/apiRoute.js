@@ -340,8 +340,12 @@ router.post('/chats', (req, res) => {
 router.get('/chats', (req, res) => {
   Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
     .populate("users")
+    .populate("latestMessage")
     .sort({ updatedAt: -1 })
-    .then(results => res.status(200).send(results))
+    .then(async results => {
+      results = await User.populate(results, { path: "latestMessage.sender" })
+      res.status(200).send(results)
+    })
     .catch(err => {
       console.log(err)
       return res.sendStatus(400)
@@ -386,7 +390,30 @@ router.post('/messages', (req, res) => {
   }
 
   Message.create(newMessage)
-    .then(result => res.status(201).send(result))
+    .then(async (message) => {
+      message = await message.populate("sender").execPopulate()
+      message = await message.populate("chat").execPopulate()
+
+      Chat.findByIdAndUpdate(chatId, { latestMessage: message })
+        .catch(err => {
+          console.log(err)
+          return res.sendStatus(400)
+        })
+
+      res.status(201).send(message)
+    })
+    .catch(err => {
+      console.log(err)
+      return res.sendStatus(400)
+    })
+})
+
+router.get('/chats/:chatId/messages', (req, res) => {
+  Message.find({ chat: req.params.chatId })
+    .populate("sender")
+    .then(messages => {
+      res.status(200).send(messages)
+    })
     .catch(err => {
       console.log(err)
       return res.sendStatus(400)

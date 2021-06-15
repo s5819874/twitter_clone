@@ -22,7 +22,7 @@ function outputChatList(chatList, container) {
 function createChatHtml(chat) {
   const chatName = getChatName(chat)
   const image = getChatImageElements(chat)
-  const latestMessage = "News!!!!!"
+  const latestMessage = getLatestMessage(chat.latestMessage)
 
   return `<a href="/messages/${chat._id}" class="resultListItem">
               ${image}
@@ -31,6 +31,15 @@ function createChatHtml(chat) {
                 <span class="subtext ellipsis"> ${latestMessage}</span>
               </div>
           </a>`
+}
+
+function getLatestMessage(latestMessage) {
+  if (latestMessage) {
+    const sender = latestMessage.sender
+    return `${sender.firstName} ${sender.lastName}: ${latestMessage.content}`
+  }
+
+  return "New chat"
 }
 
 function getChatImageElements(chat) {
