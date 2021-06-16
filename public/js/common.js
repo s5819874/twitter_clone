@@ -1,3 +1,5 @@
+const { Socket } = require("socket.io")
+
 //globals
 let cropper
 let selectedUsers = []
@@ -689,4 +691,13 @@ function getOtherUsers(users) {
   if (users.length === 1) return users
 
   return users.filter(u => u._id !== userLoggedIn._id)
+}
+
+function messageReceived(newMessage) {
+  if ($(".chatMessages").length === 0) {
+    // pop up notification
+  } else {
+    //in chat page
+    addChatMessage(newMessage)
+  }
 }

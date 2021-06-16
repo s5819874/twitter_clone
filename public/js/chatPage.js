@@ -110,6 +110,11 @@ function sendMessage(content) {
       return $(".inputTextbox").val(content)
     }
     addChatMessage(data)
+
+    if (connected) {
+      socket.emit("new message", data)
+    }
+
   })
 }
 

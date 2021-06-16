@@ -393,6 +393,7 @@ router.post('/messages', (req, res) => {
     .then(async (message) => {
       message = await message.populate("sender").execPopulate()
       message = await message.populate("chat").execPopulate()
+      message = await User.populate(message, { path: "chat.users" })
 
       Chat.findByIdAndUpdate(chatId, { latestMessage: message })
         .catch(err => {
