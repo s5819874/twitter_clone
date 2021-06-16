@@ -20,6 +20,10 @@ html, body {
     font-weight: 300;
 }
 
+ul {
+    margin: 0;
+}
+
 * {
     outline: none !important;
 }
@@ -981,7 +985,6 @@ button span {
     display: flex;
     align-items: flex-end;
     flex-shrink: 0;
-    -webkit-flex: 0;
 }
 
 .chatMessages .message .messageContainer {
@@ -998,11 +1001,22 @@ button span {
     align-items: flex-start;
 }
 
+.typingDots img,
 .chatMessages .message .messageBody {
     background-color: #f1f0f0;
     border-radius: 18px;
     font-size: 14px;
     padding: 6px 12px;
+}
+
+.typingDots {
+    padding: var(--spacing);
+    padding-bottom: 0;
+    display: none;
+}
+
+.typingDots img{
+    height: 35px;
 }
 
 .chatMessages .message.mine {

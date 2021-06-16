@@ -23,3 +23,15 @@ usePassport(app)
 app.use(routes)
 
 const server = app.listen(port, () => console.log(`Server is listening on port:${port}!`))
+const io = require('socket.io')(server, { pinTimeout: 6000 })
+
+io.on("connection", (socket) => {
+  socket.on("setup", userData => {
+    socket.join(userData._id)
+    socket.emit("connected")
+  })
+
+  socket.on("join room", room => socket.join(room))
+  socket.on("typing", room => socket.in(room).emit("typing"))
+  socket.on("stop typing", room => socket.in(room).emit("stop typing"))
+})

@@ -1,4 +1,12 @@
+let lastTypingTime
+let typing = false
+
 $(document).ready(() => {
+
+  socket.emit("join room", chatId)
+  socket.on("typing", () => $(".typingDots").show())
+  socket.on("stop typing", () => $(".typingDots").hide())
+
   $.get(`/api/chats/${chatId}`, (data) => {
     $("#chatName").text(getChatName(data))
   })
@@ -49,6 +57,8 @@ $(".sendMessageButton").click(() => {
 
 $(".inputTextbox").keydown((event) => {
 
+  updateTyping()
+
   if (event.which === 13) {
     messageSumitted()
     return false //避免換行
@@ -56,12 +66,38 @@ $(".inputTextbox").keydown((event) => {
 
 })
 
+function updateTyping() {
+  if (!connected) return
+
+  if (!typing) {
+    typing = true
+    socket.emit("typing", chatId)
+  }
+
+  lastTypingTime = new Date().getTime()
+  let timeLength = 3000
+
+  setTimeout(() => {
+    const timeNow = new Date().getTime()
+    const timeDiffs = timeNow - lastTypingTime
+
+    if (timeDiffs >= timeLength && typing) {
+      socket.emit("stop typing", chatId)
+      typing = false
+    }
+  }, timeLength)
+
+
+}
+
 function messageSumitted() {
   const content = $(".inputTextbox").val().trim()
 
   if (content) {
     sendMessage(content)
     $(".inputTextbox").val("")
+    socket.emit("stop typing", chatId)
+    typing = false
   }
 
 }
