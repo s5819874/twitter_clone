@@ -7,8 +7,11 @@ const postRoute = require('./modules/postRoute')
 const profileRoute = require('./modules/profileRoute')
 const searchRoute = require('./modules/searchRoute')
 const messageRoute = require('./modules/messageRoute')
+const notificationRoute = require('./modules/notificationRoute')
 const uploadRoute = require('./modules/uploadRoute')
 const apiRoute = require('./modules/apiRoute')
+
+
 
 
 const authenticator = (req, res, next) => {
@@ -23,6 +26,7 @@ router.use('/posts', authenticator, postRoute)
 router.use('/profile', authenticator, profileRoute)
 router.use('/search', authenticator, searchRoute)
 router.use('/messages', authenticator, messageRoute)
+router.use('/notifications', authenticator, notificationRoute)
 router.use('/uploads', authenticator, uploadRoute)
 router.use('/api', authenticator, apiRoute)
 router.get('/', authenticator, (req, res, next) => {
