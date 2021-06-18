@@ -1,5 +1,3 @@
-const { Socket } = require("socket.io")
-
 //globals
 let cropper
 let selectedUsers = []

@@ -20,4 +20,6 @@ NotificationSchema.statics.insertNotification = async (userTo, userFrom, notific
   return Notification.create(data).catch(err => console.log(err))
 }
 
-module.exports = mongoose.model('Notification', NotificationSchema)
+const Notification = mongoose.model('Notification', NotificationSchema)
+
+module.exports = Notification

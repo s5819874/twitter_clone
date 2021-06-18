@@ -9,6 +9,7 @@ const User = require('../../models/userSchema')
 const Post = require('../../models/postSchema')
 const Chat = require('../../models/chatSchema')
 const Message = require('../../models/messageSchema')
+const Notification = require('../../models/notificationSchema')
 
 
 router.get("/users", async (req, res, next) => {
@@ -98,11 +99,16 @@ router.post('/posts', (req, res) => {
   }
 
   Post.create(postData)
-    .then(post => {
-      User.populate(post, { path: "postedBy" })
-        .then(newpost => {
-          return res.status(201).send(newpost)
-        })
+    .then(async newPost => {
+      newPost = await User.populate(newPost, { path: "postedBy" })
+      newPost = await Post.populate(newPost, { path: "replyTo" })
+
+      if (req.body.replyTo) {
+        Notification.insertNotification(newPost.replyTo.postedBy, req.user, "reply", newPost._id)
+      }
+
+      return res.status(201).send(newPost)
+
     })
     .catch(err => {
       console.log(err)
@@ -133,6 +139,10 @@ router.put('/posts/:id/like', async (req, res) => {
       console.log(err)
       res.sendStatus(400)
     })
+
+  if (!isLiked) {
+    Notification.insertNotification(postUpdated.postedBy, userId, "postLike", postId)
+  }
 
   return res.status(200).send(postUpdated)
 })
@@ -173,6 +183,11 @@ router.post('/posts/:id/retweet', async (req, res) => {
       console.log(err)
       res.sendStatus(400)
     })
+
+
+  if (option === "$addToSet") {
+    Notification.insertNotification(postUpdated.postedBy, userId, "retweet", postId)
+  }
 
   return res.status(200).send(postUpdated)
 })
@@ -229,6 +244,10 @@ router.put('/users/:userId/follow', async (req, res) => {
       console.log(err)
       return res.sendStatus(400)
     })
+
+  if (!isFollowing) {
+    Notification.insertNotification(userId, req.user._id, "follow", req.user._id)
+  }
 
   return res.status(200).send(req.user)
 })
@@ -395,11 +414,17 @@ router.post('/messages', (req, res) => {
       message = await message.populate("chat").execPopulate()
       message = await User.populate(message, { path: "chat.users" })
 
-      Chat.findByIdAndUpdate(chatId, { latestMessage: message })
+      const chat = await Chat.findByIdAndUpdate(chatId, { latestMessage: message })
         .catch(err => {
           console.log(err)
           return res.sendStatus(400)
         })
+
+      chat.users.forEach(userId => {
+        if (userId === message.sender._id) return
+
+        Notification.insertNotification(userId, message.sender._id, "newMessage", chat._id)
+      })
 
       res.status(201).send(message)
     })
@@ -418,6 +443,18 @@ router.get('/chats/:chatId/messages', (req, res) => {
     .catch(err => {
       console.log(err)
       return res.sendStatus(400)
+    })
+})
+
+router.get('/notifications', (req, res) => {
+  Notification.find({ userTo: req.user._id, notificationType: { $ne: "newMessage" } })
+    .populate("userTo")
+    .populate("userFrom")
+    .sort({ createdAt: -1 })
+    .then(results => res.status(200).send(results))
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(400)
     })
 })
 
