@@ -366,6 +366,19 @@ $(document).on("click", ".post", event => {
   }
 })
 
+$(document).on("click", ".notification.active", event => {
+  const container = $(event.target)
+  const notificationId = container.data().id
+
+  //先暫停連結
+  const href = container.attr("href")
+  event.preventDefault()
+
+  console.log("here")
+  const callback = () => window.location = href
+  markNotificationAsOpened(notificationId, callback)
+})
+
 function getPostIdFromElement(element) {
   const isRoot = element.hasClass("post")
   const rootElement = isRoot ? element : element.closest(".post")
@@ -698,4 +711,16 @@ function messageReceived(newMessage) {
     //in chat page
     addChatMessage(newMessage)
   }
+}
+
+function markNotificationAsOpened(notificationId = null, callback = null) {
+  if (!callback) callback = () => location.reload()
+
+  const url = notificationId !== null ? `/api/notifications/${notificationId}/markedAsOpened` : "/api/notifications/markedAsOpened"
+
+  $.ajax({
+    url,
+    type: "PUT",
+    success: () => callback()
+  })
 }

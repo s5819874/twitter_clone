@@ -458,6 +458,24 @@ router.get('/notifications', (req, res) => {
     })
 })
 
+router.put('/notifications/:id/markedAsOpened', (req, res) => {
+  Notification.findByIdAndUpdate(req.params.id, { opened: true })
+    .then(() => res.sendStatus(204))
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(400)
+    })
+})
+
+router.put('/notifications/markedAsOpened', (req, res) => {
+  Notification.updateMany({ userTo: req.user._id }, { opened: true })
+    .then(() => res.sendStatus(204))
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(400)
+    })
+})
+
 async function getPosts(filter) {
   let results = await Post.find(filter)
     .populate("postedBy")

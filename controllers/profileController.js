@@ -8,7 +8,7 @@ const profileController = {
       let user = await User.findOne({ username: req.params.username })
         .catch(err => console.log(err))
       if (!user) {
-        let user = await User.findById(req.params.username)
+        user = await User.findById(req.params.username)
           .catch(err => console.log(err))
       }
 
