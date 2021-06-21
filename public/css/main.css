@@ -69,6 +69,7 @@ nav a {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 nav a.blue {
@@ -1092,4 +1093,26 @@ button span {
 
 .resultListItem.notification * {
     pointer-events: none;
+}
+
+#notificationsBadge,
+#messagesBadge {
+    width: 25px;
+    height: 25px;
+    background-color: var(--red);
+    color: white;
+    font-size: 18px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+}
+
+#notificationsBadge.active,
+#messagesBadge.active {
+    visibility: visible;
 }

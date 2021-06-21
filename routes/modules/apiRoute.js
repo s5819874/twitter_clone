@@ -363,6 +363,11 @@ router.get('/chats', (req, res) => {
     .sort({ updatedAt: -1 })
     .then(async results => {
       results = await User.populate(results, { path: "latestMessage.sender" })
+
+      if (req.query.unreadOnly && req.query.unreadOnly === true) {
+        results = results.filter(r => !r.latestMessage.readBy.includes(req.user._id))
+      }
+
       res.status(200).send(results)
     })
     .catch(err => {
@@ -447,7 +452,13 @@ router.get('/chats/:chatId/messages', (req, res) => {
 })
 
 router.get('/notifications', (req, res) => {
-  Notification.find({ userTo: req.user._id, notificationType: { $ne: "newMessage" } })
+  let searchObject = { userTo: req.user._id, notificationType: { $ne: "newMessage" } }
+
+  if (req.query.unreadOnly && req.query.unreadOnly === true) {
+    searchObject.opened = false
+  }
+
+  Notification.find(searchObject)
     .populate("userTo")
     .populate("userFrom")
     .sort({ createdAt: -1 })

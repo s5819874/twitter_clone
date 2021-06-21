@@ -2,6 +2,11 @@
 let cropper
 let selectedUsers = []
 
+$(document).ready(() => {
+  refreshMessagesBadge()
+  refreshNotificationsBadge()
+})
+
 $("#postTextarea, #replyTextarea").keyup(event => {
   let textBox = $(event.target)
   let value = textBox.val().trim()
@@ -711,6 +716,8 @@ function messageReceived(newMessage) {
     //in chat page
     addChatMessage(newMessage)
   }
+
+  refreshMessagesBadge()
 }
 
 function markNotificationAsOpened(notificationId = null, callback = null) {
@@ -722,5 +729,31 @@ function markNotificationAsOpened(notificationId = null, callback = null) {
     url,
     type: "PUT",
     success: () => callback()
+  })
+}
+
+function refreshMessagesBadge() {
+  $.get("/api/chats", { unreadOnly: true }, data => {
+    let number = data.length
+
+    if (number > 0) {
+      $("#messagesBadge").text(number).addClass("active")
+    }
+    else {
+      $("#messagesBadge").text("").removeClass("active")
+    }
+  })
+}
+
+function refreshNotificationsBadge() {
+  $.get("/api/notifications", { unreadOnly: true }, data => {
+    let number = data.length
+
+    if (number > 0) {
+      $("#notificationsBadge").text(number).addClass("active")
+    }
+    else {
+      $("#notificationsBadge").text("").removeClass("active")
+    }
   })
 }
