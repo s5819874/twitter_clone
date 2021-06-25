@@ -714,7 +714,7 @@ function getOtherUsers(users) {
 
 function messageReceived(newMessage) {
   if ($(".chatMessages").length === 0) {
-    showMessagePopUp(newMessage)
+    showMessagePopup(newMessage)
   } else {
     //in chat page
     addChatMessage(newMessage)
@@ -842,7 +842,12 @@ function getNotificationUrl(notification) {
   return url
 }
 
-function showMessagePopUp(newMessage) {
+function showMessagePopup(newMessage) {
+
+  if (!newMessage.chat.latestMessage._id) {
+    newMessage.chat.latestMessage = newMessage
+  }
+
   const html = createChatHtml(newMessage.chat)
   const element = $(html)
   element.hide().prependTo("#notificationList").slideDown("fast")
