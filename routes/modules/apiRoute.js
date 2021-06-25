@@ -469,6 +469,19 @@ router.get('/notifications', (req, res) => {
     })
 })
 
+router.get('/notifications/latest', (req, res) => {
+
+  Notification.findOne({ userTo: req.user._id })
+    .populate("userTo")
+    .populate("userFrom")
+    .sort({ createdAt: -1 })
+    .then(result => res.status(200).send(result))
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(400)
+    })
+})
+
 router.put('/notifications/:id/markedAsOpened', (req, res) => {
   Notification.findByIdAndUpdate(req.params.id, { opened: true })
     .then(() => res.sendStatus(204))
